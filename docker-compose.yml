@@ -1,0 +1,17 @@
+services:
+    api:
+        container_name: apishortener
+        build: .
+        command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+        env_file: 
+            - .env
+        ports:
+            - "8000:8000"
+        volumes:
+            - .:/srv
+        networks:
+            - devnet
+
+networks:
+    devnet:
+        external: true
