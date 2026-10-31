@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 from app.config import settings
-from app.routers import links, users
+from app.routers import links, users, redirect
 
 app = FastAPI(
     title="URL Shortener",
@@ -14,3 +14,5 @@ app.include_router(links.router)
 @app.get("/healthz")
 async def healthz():
     return {"status": "ok"}
+
+app.include_router(redirect.router)
