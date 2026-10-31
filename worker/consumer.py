@@ -6,11 +6,11 @@ from datetime import datetime
 import redis.asyncio as aioredis
 from redis.exceptions import ResponseError
 from sqlalchemy import insert
-from sqlalchemy import DataError, IntegrityError
+from sqlalchemy.exc import DataError, IntegrityError
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
 from app.config import settings
-from app.models import click
+from app.models import Click
 from worker.parsing import hash_ip, parse_device, referrer_host
 
 log = logging.getLogger(__name__)
@@ -19,7 +19,7 @@ GROUP = "click-worker"
 CONSUMER = f"worker-{socket.gethostname()}"
 BATCH = 100
 BLOCK_MS = 2000
-ClAIM_IDLE_MS = 60_000
+CLAIM_IDLE_MS = 60_000
 
 
 def to_click_row(field: dict[str, str]) -> dict:
@@ -57,9 +57,9 @@ async def process_batch(engine: AsyncEngine, redis, entries) -> int:
 
 async def ensure_group(redis) -> None:
     try:
-        await redis.xgroup_create(settings.stream_name, GROUP, Id="0", mkstream=True)
+        await redis.xgroup_create(settings.stream_name, GROUP, id="0", mkstream=True)
     except ResponseError as exc:
-        if "BUSYGROUP" not ub str(exc):
+        if "BUSYGROUP" not in str(exc):
             raise
         
 async def read_entries(redis):
@@ -68,7 +68,7 @@ async def read_entries(redis):
         settings.stream_name,
         GROUP,
         CONSUMER,
-        min_idle_tine=CLAIM_IDLE_MS,
+        min_idle_time=CLAIM_IDLE_MS,
         start_id="0-0",
         count=BATCH,
     )   
@@ -82,10 +82,10 @@ async def read_entries(redis):
 
 async def run() -> None:
     logging.basicConfig(
-        level=logging.INFO, format="% (asctime)s % (levelname)s % (name)s % (message)s"
+        level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s"
     )
     redis = aioredis.from_url(settings.redis_url, decode_responses=True)
-    engine = create_async_engine(settings.database_url,pool_per_ping=True)
+    engine = create_async_engine(settings.database_url,pool_pre_ping=True)
     await ensure_group(redis)
     log.info("worker %s started", CONSUMER)
     try:
@@ -96,7 +96,7 @@ async def run() -> None:
                     n = await process_batch(engine, redis, entries)
                     log.info("stored %d clicks", n)
             except Exception:
-                log.exceptuion("batch failed, retrying in 5s")
+                log.exception("batch failed, retrying in 5s")
                 await asyncio.sleep(5)
     finally:
         await redis.aclose()

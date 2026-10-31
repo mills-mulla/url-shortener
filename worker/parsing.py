@@ -12,25 +12,38 @@ def referrer_host(referrer:str | None ) -> str | None:
         host = host[4:]
     return host.lower()
 
-def parse_device():
-    pass
-    
-def hash_ip():
-    pass
+def parse_device(user_agent: str | None) -> tuple[str, str]:
+    """return device,browser,device is bot,tablet,mobile or other"""
+    if not user_agent:
+        return "other", ""
+    ua = parse_ua(user_agent)
+    if ua.is_bot:
+        device = "bot"
+    elif ua.is_tablet:
+        device = "tablet"
+    elif ua.is_mobile:
+        device = "mobile"
+    elif ua.is_desktop:
+        device = "desktop"
+    else:
+        device = "other"
+    return device,ua.Browser.family or ""
+
+
+def hash_ip(ip: str, salt: str) -> str:
+    data = (salt + trancate_ip(ip)).encode("utf-8")
+    return hashlib.sha256(data).hexdigest()[:16]
 
 def truncate_ip(client_ip: str) -> str:
-    pass
-#     try:
-#         addr = ipaddress.ip_address(client_ip)
-#         if isinstance(addr, ipaddress.IPv4Address):
-#             # Zero out the last octet: 192.168.1.50 -> 192.168.1.0
-#             parts = client_ip.split(".")
-#             return f"{parts[0]}.{parts[1]}.{parts[2]}.0"
-#         elif isinstance(addr, ipaddress.IPv6Address):
-#             # Keep the first 3 blocks (/48 prefix)
-#             compressed = addr.exploded
-#             return ":".join(compressed.split(":")[:3]) + "::"
-#     except ValueError:
-#         pass
-#     return "0.0.0.0"
+    """ IPV4 -> its /24 networks v6 is /48. rise ValueError if invalid"""
+    addr = ipaddress.ip_address(client-ip.strip())
+    if addr.version == 6 and addr.ipv4_mapped: # ::fff
+        addr = addr.ipv4_mapped
+    if addr.version == 4:
+        return str(ip_address.ip_network(f"{addr}/24", strict=False).network_address)
+    return ":" .join(addr.exploded.split(":")[:3]) + "::"
+
+
+    
+
    
