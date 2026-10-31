@@ -36,11 +36,11 @@ def hash_ip(ip: str, salt: str) -> str:
 
 def truncate_ip(client_ip: str) -> str:
     """ IPV4 -> its /24 networks v6 is /48. rise ValueError if invalid"""
-    addr = ipaddress.ip_address(client-ip.strip())
+    addr = ipaddress.ip_address(client_ip.strip())
     if addr.version == 6 and addr.ipv4_mapped: # ::fff
         addr = addr.ipv4_mapped
     if addr.version == 4:
-        return str(ip_address.ip_network(f"{addr}/24", strict=False).network_address)
+        return str(ipaddress.ip_network(f"{addr}/24", strict=False).network_address)
     return ":" .join(addr.exploded.split(":")[:3]) + "::"
 
 

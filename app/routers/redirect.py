@@ -1,7 +1,7 @@
 import re
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import RedirectResponse
 from redis.asyncio import Redis
 from sqlalchemy import select
@@ -20,6 +20,7 @@ CODE_RE = re.compile(r"[A-Za-z0-9_-]{4,32}")
 @router.get("/{code}")
 async def redirect(
     code: str,
+    request: Request,
     db: AsyncSession = Depends(get_db),
     redis: Redis = Depends(get_redis),
 ):

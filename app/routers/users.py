@@ -19,5 +19,5 @@ async def create_user(body: UserCreate, db: AsyncSession = Depends(get_db)):
         await db.commit()
     except IntegrityError:
         await db.rollback()
-        raise HTTPException(ststus_code=409, detail="Email already registered")
+        raise HTTPException(status_code=409, detail="Email already registered")
     return UserCreated(id=user.id, email=user.email, api_key=key)

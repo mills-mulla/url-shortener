@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta, timezone
 
-from fast api import APIRouter, Depends,Query
+from fastapi import APIRouter, Depends,Query
 from sqlalchemy import func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db import get db
+from app.db import get_db
 from app.deps import current_user
 from app.models import Click, User
 from app.routers.links import _get_owned
@@ -16,7 +16,7 @@ from app.schemas import(
     StatsOut,
 )
 router = APIRouter(prefix="/v1/links", tags=["stats"])
-@router.get("/{code}/stats", response_model=StatOut)
+@router.get("/{code}/stats", response_model=StatsOut)
 async def link_stats(
     code: str,
     days: int = Query(30, ge=1, le=365),
@@ -31,7 +31,7 @@ async def link_stats(
     day_rows = await db.execute(
         select(
             fun.date_trunc(text("day"), func.timezone(text("UTC"), Clicks.ts)).label("day"),
-            func.count(.label("clicks")),
+            func.count().label("clicks"),
         )
         .where(*where)
         .group_by(text("1"))

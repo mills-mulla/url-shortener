@@ -37,8 +37,8 @@ async def publish_click(redis: Redis,link_id: int, request: Request) -> None:
     try:
         event = build_click_event(
             link_id,
-            request.header.get("referrer"),
-            request.header.get("user-agent"),
+            request.headers.get("referrer"),
+            request.headers.get("user-agent"),
             request.client.host if request.client else None,
             datetime.now(timezone.utc),
         )

@@ -7,6 +7,8 @@ from app.config import settings
 from app.db import get_db
 from app.models import User
 from app.services.security import hash_key
+from app.services import ratelimit
+
 
 _redis:Redis | None = None
 

@@ -109,7 +109,7 @@ eq "invalid email -> 422" 422 "$(status -X POST "$BASE/v1/users" -H "$J" -d '{"e
 
 # ---------- 3. links ----------
 sec "Links"
-R=$(post_link "$KEY" '{"url":"https://example.com"}')
+R=$(post_link "$KbashEY" '{"url":"https://example.com"}')
 CODE=$(echo "$R" | jget code)
 eq "random code has 7 characters" 7 "${#CODE}"
 if [ -z "$CODE" ]; then

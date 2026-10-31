@@ -77,7 +77,7 @@ class DeviceCount(BaseModel):
         device:str
         clicks:int
     
-class countryCount(BaseModel):
+class CountryCount(BaseModel):
     country:str
     clicks:int
 
@@ -86,4 +86,4 @@ class StatsOut(BaseModel):
     by_day: list[DayCount]
     top_referrers: list[ReferrerCount]
     devices: list[DeviceCount]
-    countries: list[countryCount]
+    countries: list[CountryCount]
