@@ -1,7 +1,7 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file="app_env", extra="ignore")
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     app_env: str = "dev"
     base_url: str = "http://localhost:8000"
@@ -13,5 +13,6 @@ class Settings(BaseSettings):
     stream_name: str = "clicks:stream"
     stream_maxlen: int = 100000
     geoip_db_path: str = "/data/GEoLitez-Country.mmdb"
+    ip_hash_salt: str
 
 settings = Settings()

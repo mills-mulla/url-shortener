@@ -33,3 +33,13 @@ async def current_user(
         raise HTTPException(status_code=401, detail="Invalid API key")
     return user
     
+async def rate_limit_create(
+    user: User = Depends(current_user),
+    redis: Redis = Depends(get_redis),
+) -> None:
+    """Limit link creation per user per minute."""
+    allowed,retry_after = await ratelimit.hit(
+        redis, f"create:{user.id}", settings.rate_limit_crate_per_min, 60
+    )
+    if not allowed:
+        raise HTTPException(status_code=429, detail="Too many requests", header={"Retry-After": str(retry_after)})

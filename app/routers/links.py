@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.db import get_db
-from app.deps import current_user
+from app.deps import current_user,rate_limit_create
 from app.models import Link, User
 from app.services.codes import generate_code
 from app.schemas import LinkCreate,LinkOut, LinkUpdate
@@ -46,7 +46,8 @@ async def _get_owned(db: AsyncSession, user: User, code: str) -> Link:
 async def  create_link(
     body: LinkCreate,
     user: User = Depends(current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    _rl: None = Depends(rate_limit_create),
 ):
 
     target = _check_target(body.url)

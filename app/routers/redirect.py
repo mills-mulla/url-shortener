@@ -11,7 +11,7 @@ from app.db import get_db
 
 from app.deps import get_redis
 from app.models import Link
-from app.services import caches
+from app.services import caches, events
 
 router = APIRouter(tags=["redirect"])
 
@@ -50,5 +50,6 @@ async def redirect(
     expires_at = data["expires_at"]
     if expires_at and datetime.fromisoformat(expires_at) <= datetime.now(timezone.utc):
          raise HTTPException(status_code=410, detail="Link has expired")
-    
+
+    await events.publish_click(redis, data["id"], request)
     return RedirectResponse(data["url"],status_code=302)
