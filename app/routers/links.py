@@ -21,10 +21,10 @@ def _to_out(link:Link) -> LinkOut:
     return LinkOut(
         code=link.code,
         short_url=f"{settings.base_url.rstrip('/')}/{link.code}",
-        target_url=link.targer_url,
+        target_url=link.target_url,
         is_active=link.is_active,
         expires_at=link.expires_at,
-        created_at=link.crated_at,
+        created_at=link.created_at,
     )
 
 def _check_target(url: str) -> str:
@@ -69,23 +69,23 @@ async def  create_link(
 
         #random codes may collide so we try afew times.The UNIQUE index is the refrence
 
-        for _ in range(5):
-            linl =Link(
-                code=generate_code(settings.code_length),
-                target_url=target,
-                user_id=user.id,
-                expires_at=body.expires_at,
-            )
-            db.add(link)
-            try:
-                await db.commit()
-            except IntegrityError:
-                await db.rollback()
-                continue
-            await db.refresh(link)
-            return _to_out(link)
+    for _ in range(5):
+        link = Link(
+            code=generate_code(settings.code_length),
+            target_url=target,
+            user_id=user.id,
+            expires_at=body.expires_at,
+        )
+        db.add(link)
+        try:
+            await db.commit()
+        except IntegrityError:
+            await db.rollback()
+            continue
+        await db.refresh(link)
+        return _to_out(link)
 
-        raise HTTPException(status_code=503, detail="Could not allocate a code,try again")
+    raise HTTPException(status_code=503, detail="Could not allocate a code,try again")
             
 @router.get("", response_model=list[LinkOut])
 async def list_links(
@@ -149,5 +149,5 @@ async def deactivate_link(
     link.is_active = False #soft delete to keep the click history
 
     await db.commit()
-    return response(ststus_code=204)
+    return response(status_code=204)
 
