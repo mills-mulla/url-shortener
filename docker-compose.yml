@@ -12,6 +12,19 @@ services:
         networks:
             - devnet
 
+    worker:
+        container_name: apiworker
+        build: .
+        command: python -m worker.consumer
+        env_file: 
+                - .env
+        volumes:
+                - .:/srv
+        networks:
+                - devnet
+        restart: unless-stopped
+
+
 networks:
     devnet:
         external: true
