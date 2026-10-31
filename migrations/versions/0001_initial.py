@@ -10,7 +10,7 @@ down_revision = None
 branch_labels = None
 depends_on = None
 
-def upgarade() -> None:
+def upgrade() -> None:
     op.create_table(
         "users",
         sa.Column("id", sa.BigInteger, primary_key=True),
@@ -20,13 +20,13 @@ def upgarade() -> None:
     )
     op.create_table(
         "links",
-        sa.column("id", sa.BigInteger, primary_key=True),
-        sa.column("code", sa.String(32), nullable=False, unique=True),
-        sa.column("user_id", sa.BigInteger, sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False),
-        sa.column("target_url", sa.Text(), nullable=False),
-        sa.column("is_active", sa.Boolean(), server_default=sa.text("true"), nullable=False),
-        sa.column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
-        sa.column("expires_at", sa.DateTime(timezone=True)),
+        sa.Column("id", sa.BigInteger, primary_key=True),
+        sa.Column("code", sa.String(32), nullable=False, unique=True),
+        sa.Column("user_id", sa.BigInteger, sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False),
+        sa.Column("target_url", sa.Text(), nullable=False),
+        sa.Column("is_active", sa.Boolean(), server_default=sa.text("true"), nullable=False),
+        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+        sa.Column("expires_at", sa.DateTime(timezone=True)),
     )
     op.create_index(
         "ix_links_user_created",
@@ -35,14 +35,14 @@ def upgarade() -> None:
     )
     op.create_table(
         "clicks",
-        sa.column("id", sa.BigInteger, primary_key=True, autoincrement=True),
-        sa.column("ts", sa.DateTime(timezone=True), primary_key=True),
-        sa.column("link_id", sa.BigInteger, sa.ForeignKey("links.id", ondelete="CASCADE"), nullable=False),
-        sa.column("referer", sa.Text(), nullable=True),
-        sa.column("device", sa.String(16), nullable=True),
-        sa.column("browser", sa.String(64), nullable=True),
-        sa.column("country", sa.CHAR(2), nullable=True),
-        sa.column("ip_hash", sa.CHAR(16), nullable=True),
+        sa.Column("id", sa.BigInteger, primary_key=True, autoincrement=True),
+        sa.Column("ts", sa.DateTime(timezone=True), primary_key=True),
+        sa.Column("link_id", sa.BigInteger, sa.ForeignKey("links.id", ondelete="CASCADE"), nullable=False),
+        sa.Column("referer", sa.Text(), nullable=True),
+        sa.Column("device", sa.String(16), nullable=True),
+        sa.Column("browser", sa.String(64), nullable=True),
+        sa.Column("country", sa.CHAR(2), nullable=True),
+        sa.Column("ip_hash", sa.CHAR(16), nullable=True),
     )
     op.create_index(
         "ix_clicks_link_ts",
